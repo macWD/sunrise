@@ -9,9 +9,12 @@
 
 // How many NeoPixels are attached to the Arduino?
 #define LED_COUNT 28
-
+// Color temperature range (K)
 #define K_LOW  1500
 #define K_HIGH 4000
+// The brightness curve shape from 'sunrise brightness.xlsx'
+// Lower numbers give a faster curve.
+#define BRIGHT_CURVE  675
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -50,16 +53,21 @@ void loop()
   float y;
   float i;
   int kx;
+  float fullbright;
   float brightmath;
 
   for (int k=0; k<5000; k++)
   {
-    brightmath = logf((float)(k+675)/675) / logf(5000) * 4 * 255;
+    // a logarigthmic brigtness curve defined in 'sunrise brightness.xlsx'
+    fullbright = logf((float)(5000+BRIGHT_CURVE)/BRIGHT_CURVE);
+    brightmath = logf((float)(k+BRIGHT_CURVE)/BRIGHT_CURVE) / fullbright * 255;
     if (brightmath < 1) brightmath = 1;
     if (brightmath > 255) brightmath = 255;
     strip.setBrightness((int) brightmath);
+    // change color every other brightness change for 2500 steps total
     kx = k/2 + 1500;
 
+    // circular brightness pattern to mix with the overall brigntness of the strip
     for(int pixel=0; pixel<15; pixel++)
     {
       // formula for a circle of radius 15
@@ -71,7 +79,7 @@ void loop()
     }
     strip.show();
 
-    delay(120); // 120 ms * 5000 temperature steps = 10 minutes
+    delay(120); // 120 ms * 5000 steps = 10 minutes
 
   } // next color temperature
 
