@@ -38,7 +38,6 @@ void setup()
   clock_prescale_set(clock_div_1);
 #endif
   // END of Trinket-specific code.
-  //Serial.begin(9600);      // for debug
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS to max
@@ -49,9 +48,9 @@ void setup()
 
 void loop()
 {
-  float x;
-  float y;
-  float i;
+  float x;  // x point on the circle
+  float y;  // y point on the circle
+  float i;  // y converted to intensity
   int kx;
   float fullbright;
   float brightmath;
@@ -73,9 +72,10 @@ void loop()
       // formula for a circle of radius 15
       x = pixel + 0.5; //even pixels means never start at x=0
       y = (float) sqrt( (double)(sq(15)-sq(x)) );
+      // since the strip is 1 dimensional, convert y to intensity
       i = (15-y)*2 + 1;
       strip.setPixelColor((13+pixel), KtoPixelColor(kx,i,0));
-      strip.setPixelColor((14-pixel), KtoPixelColor(kx,i,1));
+      strip.setPixelColor((14-pixel), KtoPixelColor(kx,i,0));
     }
     strip.show();
 
